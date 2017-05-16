@@ -52,7 +52,7 @@ def patch_detect(crds, hsv):
         for pixel in line:
             if v < BLACK_V_TH or (v > WHITE_V_TH and s < WHITE_S_TH):
                 intact += 1
-            # OpenCV histogram needed
+            # Color detection stem
 
 
 def item_detect(file_path):
