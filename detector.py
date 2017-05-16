@@ -1,6 +1,7 @@
 import os
 import sys
 
+import colorsys
 import numpy as np
 from scipy import misc, signal
 from skimage.feature import greycomatrix, greycoprops
@@ -37,15 +38,16 @@ def rough_patches(image):
             yield coords
 
 
-def hsv_detect(rought_coords, file_path):
-    colorful = misc.imread(file_path)
-    # Apply alongside to each pixel colorsys.rgb_to_hsv
-    # Check each pixel for corrosion
-    # return hsv cunsultation and patch coordinates
+def get_hsv_matrix(file_path):
+    colorful = misc.imread(file_path, mode='RGB')
+    return np.apply_along_axis(lambda x: colorsys.rgb_to_hsv(*x), 2, colorful)
 
 
 if __name__ == "__main__":
     ds = data_set(sys.argv[1])
     for j in ds:
-        for i in rough_patches(j):
-            print(i)
+        cl = get_hsv_matrix(j)
+        import pdb
+        pdb.set_trace()
+        # for i in rough_patches(j):
+            # print(i)
