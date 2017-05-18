@@ -2,8 +2,12 @@ import os
 import sys
 
 import colorsys
+
+sys.path.append('/usr/local/lib/python3.5/site-packages')
+
+import cv2
 import numpy as np
-from scipy import misc, signal
+from scipy import misc, signal, ndimage
 from skimage.feature import greycomatrix, greycoprops
 
 
@@ -42,24 +46,45 @@ def get_hsv_matrix(file_path):
 
 
 def patch_detect(crds, hsv):
+    i, j, v, k = crds
+    patch = ndimage.filters.gaussian_filter(hsv[i:j, v:k], np.std(hsv[i:j, v:k]))
+
     lower_white_mask = np.array([0, 0, 80])
     upper_white_mask = np.array([360, 25, 100])
+    white = cv2.inRange(patch, lower_white_mask, upper_white_mask)
 
     lower_black_mask = np.array([0, 0, 0])
-    upper_black_mask = np.array([360, 100, 5])
+    upper_black_mask = np.array([360, 100, 10])
+    black = cv2.inRange(patch, lower_black_mask, upper_black_mask)
 
+    lower_rust_mask = np.array([0, 30, 10])
+    upper_rust_mask = np.array([35, 80, 65])
+    rust = cv2.inRange(patch, lower_rust_mask, upper_rust_mask)
 
-    # TODO:
-    # Smooth with Gaussian Filter
-    # Apply cv2 masks to determine rust color range
-    # Calculate percetage of rotten area in a patch
-    raise NotImplementedError
+    out_patch = patch.copy()
+
+    out_patch[np.where(white!=0)] = 0
+    out_patch[np.where(black!=0)] = 0
+    out_patch[np.where(rust==0)] = 0
+
+    nonzero = np.count_nonzero(out_patch)
+
+    if nonzero > 0:
+        if nonzero / (nonzero/100) >= 50:
+            return crds
 
 
 def item_detect(file_path):
     hsv = get_hsv_matrix(file_path)
     patches = rough_patches(file_path)
-    corroded = [patch_detect(i, hsv) for i in patches]
+    corroded = []
+    for i in patches:
+        prediction = patch_detect(i, hsv)
+        if prediction:
+            corroded.append(prediction)
+
+    if corroded:
+        print(corroded)
 
 
 def data_set(path):
