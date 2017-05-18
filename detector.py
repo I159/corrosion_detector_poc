@@ -11,12 +11,6 @@ from scipy import misc, signal, ndimage
 from skimage.feature import greycomatrix, greycoprops
 
 
-ROUGH_TH = .5
-WHITE_S_TH = 0.2
-WHITE_V_TH = 252
-BLACK_V_TH = 0.2
-
-
 def pixel_patches(file_path, size=32):
     grey = misc.imread(file_path, mode='L')
     for i in range(0, grey.shape[0], 8):
