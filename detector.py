@@ -42,17 +42,18 @@ def get_hsv_matrix(file_path):
 
 
 def patch_detect(crds, hsv):
-    """
-    return percentage, coords
-    """
+    lower_white_mask = np.array([0, 0, 80])
+    upper_white_mask = np.array([360, 25, 100])
 
-    corroded = intact = 0
-    hsv_patch = hsv[crds[0]: crds[1], crds[2]: crds[3]]
-    for line in hsv_patch:
-        for pixel in line:
-            if v < BLACK_V_TH or (v > WHITE_V_TH and s < WHITE_S_TH):
-                intact += 1
-            # Color detection stem
+    lower_black_mask = np.array([0, 0, 0])
+    upper_black_mask = np.array([360, 100, 5])
+
+
+    # TODO:
+    # Smooth with Gaussian Filter
+    # Apply cv2 masks to determine rust color range
+    # Calculate percetage of rotten area in a patch
+    raise NotImplementedError
 
 
 def item_detect(file_path):
